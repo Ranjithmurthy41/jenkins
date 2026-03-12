@@ -1,1 +1,2 @@
-initial code 
+initial code
+function 1 

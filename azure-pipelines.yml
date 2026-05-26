@@ -18,9 +18,24 @@ stages:
         deploy:
           steps:
           - script: |
-              # Create web target folders with admin permissions
+              echo "=== Current Agent Workspace Paths ==="
+              echo "Pipeline Workspace: $(Pipeline.Workspace)"
+              echo "Default Working Dir: $(System.DefaultWorkingDirectory)"
+              
+              echo "=== Checking available HTML files ==="
+              find . -name "index.html" || echo "No index.html found in current folder tree"
+              
+              echo "=== Starting Deployment ==="
               sudo mkdir -p /var/www/html/
               
-              # Force copy index.html directly into the folder
-              sudo cp -f $(Pipeline.Workspace)/s/index.html /var/www/html/
+              # Tries your main path first, falls back to local find if needed
+              if [ -f "$(Pipeline.Workspace)/s/index.html" ]; then
+                sudo cp -f "$(Pipeline.Workspace)/s/index.html" /var/www/html/
+              elif [ -f "./index.html" ]; then
+                sudo cp -f "./index.html" /var/www/html/
+              else
+                echo "Error: index.html not found anywhere!" && exit 1
+              fi
+              
+              echo "Deployment Successful!"
             displayName: 'Deploy index.html to Nginx Web Server'

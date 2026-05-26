@@ -11,7 +11,7 @@ stages:
   - deployment: DeployWeb
     displayName: 'Deploy to AWS EC2'
     environment:
-      name: 'AWS-EC2' # !!! Change this to match your exact Azure DevOps Environment name !!!
+      name: 'AWS_EC2' # !!! Change this to match your exact Azure DevOps Environment name !!!
       resourceType: VirtualMachine
     strategy:
       runOnce:

@@ -17,25 +17,19 @@ stages:
       runOnce:
         deploy:
           steps:
+          # 👇 CRITICAL FIX: This downloads your index.html file to the VM
+          - checkout: self 
+
           - script: |
-              echo "=== Current Agent Workspace Paths ==="
-              echo "Pipeline Workspace: $(Pipeline.Workspace)"
-              echo "Default Working Dir: $(System.DefaultWorkingDirectory)"
-              
-              echo "=== Checking available HTML files ==="
-              find . -name "index.html" || echo "No index.html found in current folder tree"
+              echo "=== Verifying repository contents ==="
+              ls -la
               
               echo "=== Starting Deployment ==="
+              # Ensure the target web server directory exists
               sudo mkdir -p /var/www/html/
               
-              # Tries your main path first, falls back to local find if needed
-              if [ -f "$(Pipeline.Workspace)/s/index.html" ]; then
-                sudo cp -f "$(Pipeline.Workspace)/s/index.html" /var/www/html/
-              elif [ -f "./index.html" ]; then
-                sudo cp -f "./index.html" /var/www/html/
-              else
-                echo "Error: index.html not found anywhere!" && exit 1
-              fi
+              # Copy the index.html from your repository workspace to the web directory
+              sudo cp -f ./index.html /var/www/html/
               
-              echo "Deployment Successful!"
+              echo "Deployment successful!"
             displayName: 'Deploy index.html to Nginx Web Server'

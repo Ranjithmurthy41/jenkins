@@ -11,13 +11,16 @@ stages:
   - deployment: DeployWeb
     displayName: 'Deploy to AWS EC2'
     environment:
-      name: 'AWS_EC2' # !!! Change this to match your exact Azure DevOps Environment name !!!
+      name: 'AWS_EC2'
       resourceType: VirtualMachine
     strategy:
       runOnce:
         deploy:
           steps:
           - script: |
-              # Copy the index.html file to the default Nginx web directory
-              sudo cp $(Pipeline.Workspace)/s/index.html /var/www/html/
+              # Create web target folders with admin permissions
+              sudo mkdir -p /var/www/html/
+              
+              # Force copy index.html directly into the folder
+              sudo cp -f $(Pipeline.Workspace)/s/index.html /var/www/html/
             displayName: 'Deploy index.html to Nginx Web Server'
